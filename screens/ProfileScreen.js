@@ -11,7 +11,7 @@ import { getAuth } from 'firebase/auth';
 import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}) => {
   const auth = getAuth();
   const currentUser = auth.currentUser;
   const userId = currentUser?.uid; // Ensure the user is logged in
@@ -117,6 +117,17 @@ const ProfileScreen = () => {
           {isEditing ? 'Save Changes' : 'Edit Profile'}
         </Text>
       </TouchableOpacity>
+
+
+      {userData?.isAdmin ?
+      <TouchableOpacity
+        style={[styles.button, styles.logoutButton]}
+        onPress={() => navigation.navigate("AdminScreen")}
+      >
+        <Text style={styles.buttonText}>Admin</Text>
+      </TouchableOpacity> : 
+      ""
+      }
 
       {/* Button to log out */}
       <TouchableOpacity

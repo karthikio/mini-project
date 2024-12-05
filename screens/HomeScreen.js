@@ -47,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* Modern Header */}
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Welcome to QuickBite!</Text>
+        <Text style={styles.header}>Welcome to FoodQ!</Text>
         <Text style={styles.subHeader}>
           Discover delicious and freshly prepared meals at our college food court. From quick bites to satisfying meals,
           we've got something for everyone!

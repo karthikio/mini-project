@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  ScrollView
 } from 'react-native';
 
 const MenuDetailScreen = ({ route, navigation }) => {
@@ -17,11 +18,43 @@ const MenuDetailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image source={{ uri: item.image }} style={styles.image} />     
       <Text style={styles.name}>{item.name}</Text>
+  
       <Text style={styles.price}>Rs. {item.price}</Text>
       <Text style={styles.description}>{item.description}</Text>
+
+      {/* Preparing Time */}
+      <Text style={styles.preparingTime}>Preparing Time: {item.preparingTime} minutes</Text>
+
+
+    {/* Nutrition Info */}
+    {item.nutrition && (
+      <View style={styles.nutritionCard}>
+        <Text style={styles.cardTitle}>Nutrition Information:</Text>
+        {Object.entries(item.nutrition).map(([key, value]) => {
+          // Map emojis based on the nutrient type
+          const emojiMap = {
+            protein: '💪', // Strong arm for protein
+            kcal: '🔥', // Fire for calories
+            fat: '🍔', // Burger for fat
+            carbs: '🍞', // Bread for carbs
+            sugar: '🍭', // Lollipop for sugar
+            fiber: '🌱', // Plant for fiber
+          };
+
+      const emoji = emojiMap[key.toLowerCase()] || '🔍'; // Default emoji
+
+        return (
+          <Text key={key} style={styles.nutritionItem}>
+            {emoji}  {key.charAt(0).toUpperCase() + key.slice(1)} - {value}
+          </Text>
+        );
+      })}
+      </View>
+      )}  
+    
 
       <View style={styles.quantityContainer}>
         <TouchableOpacity
@@ -42,7 +75,7 @@ const MenuDetailScreen = ({ route, navigation }) => {
       <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
         <Text style={styles.addToCartText}>Add to Cart</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -62,7 +95,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
   },
   price: {
     fontSize: 20,
@@ -72,7 +104,31 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     color: '#555',
+    marginBottom: 20
+  },
+  preparingTime: {
+    fontSize: 16,
+    color: '#555555',
+    marginBottom: 20
+  },
+  nutritionCard: {
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  nutritionItem: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 5,
   },
   quantityContainer: {
     flexDirection: 'row',

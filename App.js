@@ -6,6 +6,7 @@ import { auth } from './firebase/firebaseConfig'; // Update the path
 import AuthScreen from './screens/AuthScreen';
 import MainTabs from './navigation/MainTabs';
 import MenuDetailScreen from './screens/MenuDetailScreen';
+import AdminScreen from './screens/AdminScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ const App = () => {
           <>
             <Stack.Screen name="HomeTabs" component={MainTabs} options={{ headerShown: false }} />
             <Stack.Screen name="MenuDetail" component={MenuDetailScreen} options={{headerTintColor: "#D24545", headerBackTitle: "Back"}} /> 
+            <Stack.Screen name="AdminScreen" component={AdminScreen} options={{headerTintColor: "#D24545", headerBackTitle: "Back"}} /> 
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />

@@ -8,7 +8,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebaseConfig';
 import { Ionicons } from 'react-native-vector-icons';
 
@@ -20,40 +20,40 @@ const MenuScreen = ({ navigation }) => {
   const userId = auth.currentUser.uid;
 
   useEffect(() => {
-    // Fetch menu items
-    const fetchMenuData = async () => {
-      try {
-        const menuCollection = collection(db, 'menu');
-        const menuSnapshot = await getDocs(menuCollection);
-        const menuList = menuSnapshot.docs.map((doc) => ({
+    // Real-time listener for menu collection
+    const unsubscribeMenu = onSnapshot(
+      collection(db, 'menu'),
+      (snapshot) => {
+        const menuList = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setMenu(menuList);
-      } catch (error) {
-        console.error('Error fetching menu data:', error);
-      } finally {
         setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching menu data:', error);
       }
-    };
+    );
 
-    // Fetch user's favorites
-    const fetchFavorites = async () => {
-      try {
-        const favoritesCollection = collection(db, `favorites/${userId}/food`);
-        const favoritesSnapshot = await getDocs(favoritesCollection);
-        const favoriteItems = new Set(
-          favoritesSnapshot.docs.map((doc) => doc.id)
-        );
+    // Real-time listener for user's favorites
+    const unsubscribeFavorites = onSnapshot(
+      collection(db, `favorites/${userId}/food`),
+      (snapshot) => {
+        const favoriteItems = new Set(snapshot.docs.map((doc) => doc.id));
         setFavorites(favoriteItems);
-      } catch (error) {
+      },
+      (error) => {
         console.error('Error fetching favorites:', error);
       }
-    };
+    );
 
-    fetchMenuData();
-    fetchFavorites();
-  }, []);
+    // Cleanup subscriptions on unmount
+    return () => {
+      unsubscribeMenu();
+      unsubscribeFavorites();
+    };
+  }, [userId]);
 
   const handleFavoriteToggle = async (item) => {
     const favoriteDocRef = doc(db, `favorites/${userId}/food`, item.id);
@@ -113,7 +113,6 @@ const MenuScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      
       {menu.length > 0 ? (
         <FlatList
           data={menu}
@@ -136,13 +135,6 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: '#fff',
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-    color: '#333',
-  },
   listContainer: {
     paddingBottom: 20,
   },
@@ -159,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   itemImage: {
-    width: "100%",
+    width: '100%',
     height: 120,
     borderRadius: 5,
     marginBottom: 10,
@@ -171,21 +163,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    textAlign: "left"
   },
   itemFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: 5
+    marginTop: 5,
   },
   itemPrice: {
     fontSize: 14,
     color: '#777',
-  },
-  favoriteIcon: {
-    marginLeft: 10,
   },
   loaderContainer: {
     flex: 1,

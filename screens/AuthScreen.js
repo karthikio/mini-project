@@ -14,6 +14,12 @@ const AuthScreen = ({ navigation }) => {
   const handleAuth = async () => {
     const { name, rollNo, email, password } = form;
 
+    if (isSignUp && !email.endsWith('@kongu.edu')) {
+      Alert.alert('Invalid Email', 'Email must belong to @kongu.edu domain.');
+      return; // Stop further execution
+    }
+  
+
     try {
       setLoading(true); // Start loading
 
@@ -42,7 +48,7 @@ const AuthScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <Text style={styles.appTitle}>FoodQueue</Text>
+        <Text style={styles.appTitle}>FoodQ</Text>
 
         {isSignUp && (
           <>
@@ -58,7 +64,6 @@ const AuthScreen = ({ navigation }) => {
               placeholder="Roll No"
               value={form.rollNo}
               onChangeText={(text) => setForm({ ...form, rollNo: text })}
-              keyboardType="numeric"
             />
           </>
         )}
